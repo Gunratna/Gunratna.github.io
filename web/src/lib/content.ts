@@ -28,7 +28,7 @@ export const meta = {
    *   4. Paste it below — emails will land directly in your Gmail.
    * Free tier: 50 submissions/month.
    */
-  formspreeId: "xpznkwvd", // ← REPLACE with your actual ID from formspree.io
+  formspreeId: "xzdqjnzr", // Formspree form ID — delivers contact form submissions to borkargunratna400@gmail.com
 } as const;
 
 /* A subtle "currently" profile card — open roles shown as compact badges. */
