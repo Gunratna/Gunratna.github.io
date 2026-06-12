@@ -6,6 +6,7 @@ import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { SectionProgress } from "@/components/ui/SectionProgress";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { BackgroundParticles } from "@/components/ui/BackgroundParticles";
+import { ParticleToggle } from "@/components/ui/ParticleToggle";
 import { ConnectionNotice } from "@/components/ui/ConnectionNotice";
 import { TerminalToasts } from "@/components/ui/TerminalToasts";
 import { CommandPalette } from "@/components/ui/CommandPalette";
@@ -40,6 +41,7 @@ export default function Home() {
       <ConnectionNotice />
       <TerminalToasts />
       <CommandPalette />
+      <ParticleToggle />
     </>
   );
 }

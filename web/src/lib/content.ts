@@ -19,6 +19,16 @@ export const meta = {
   siteUrl: "https://gunratna.github.io",
   // Paste the token from Google Search Console (HTML tag verification) here:
   googleVerification: "",
+  /**
+   * Formspree endpoint for the contact form.
+   * Steps:
+   *   1. Go to https://formspree.io → Sign Up (use borkargunratna400@gmail.com)
+   *   2. Create New Form → name it "Portfolio Contact"
+   *   3. Copy the form ID (looks like "xpznkwvd")
+   *   4. Paste it below — emails will land directly in your Gmail.
+   * Free tier: 50 submissions/month.
+   */
+  formspreeId: "xpznkwvd", // ← REPLACE with your actual ID from formspree.io
 } as const;
 
 /* A subtle "currently" profile card — open roles shown as compact badges. */

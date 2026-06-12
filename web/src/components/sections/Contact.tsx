@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
-import { Mail, Send, Check, Loader2 } from "lucide-react";
+import { Mail, Send, Check, Loader2, AlertCircle } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/ui/BrandIcons";
 import { meta } from "@/lib/content";
 import { Section } from "@/components/ui/Section";
@@ -14,38 +14,85 @@ import { Reveal } from "@/components/ui/Reveal";
 const schema = z.object({
   name: z.string().min(2, "Please enter your name"),
   email: z.string().email("Enter a valid email"),
-  // honeypot — must stay empty
-  company: z.string().max(0).optional(),
+  _gotcha: z.string().max(0).optional(), // honeypot
   message: z.string().min(10, "Message should be at least 10 characters"),
 });
 
 type FormData = z.infer<typeof schema>;
+type Status = "idle" | "sending" | "sent" | "error";
 
 const links = [
   { kind: "email", label: meta.email, href: `mailto:${meta.email}`, Icon: Mail },
-  { kind: "linkedin", label: "linkedin.com/in/gunratna-borkar", href: meta.linkedin, Icon: LinkedinIcon },
+  {
+    kind: "linkedin",
+    label: "linkedin.com/in/gunratna-borkar",
+    href: meta.linkedin,
+    Icon: LinkedinIcon,
+  },
   { kind: "github", label: "github.com/Gunratna", href: meta.github, Icon: GithubIcon },
 ];
 
 export function Contact() {
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState<Status>("idle");
+
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
   const onSubmit = async (data: FormData) => {
-    if (data.company) return; // honeypot tripped
-    // No backend: open the user's mail client with a prefilled draft.
-    const body = encodeURIComponent(`${data.message}\n\n— ${data.name} (${data.email})`);
-    const subject = encodeURIComponent(`Portfolio contact from ${data.name}`);
-    window.location.href = `mailto:${meta.email}?subject=${subject}&body=${body}`;
-    await new Promise((r) => setTimeout(r, 600));
-    setSent(true);
-    reset();
-    setTimeout(() => setSent(false), 4000);
+    if (data._gotcha) return; // honeypot tripped
+
+    setStatus("sending");
+
+    /*
+     * Formspree API — free tier, 50 submissions/month.
+     * Emails land directly in borkargunratna400@gmail.com.
+     *
+     * To activate:
+     *   1. Sign up at https://formspree.io with your Gmail.
+     *   2. Create a form → copy the ID.
+     *   3. Replace `formspreeId` in web/src/lib/content.ts.
+     */
+    const endpoint = `https://formspree.io/f/${meta.formspreeId}`;
+
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          message: data.message,
+        }),
+      });
+
+      if (res.ok) {
+        setStatus("sent");
+        reset();
+        setTimeout(() => setStatus("idle"), 5000);
+      } else {
+        // Fallback to mailto so the message is never lost
+        const body = encodeURIComponent(
+          `${data.message}\n\n— ${data.name} (${data.email})`
+        );
+        const subject = encodeURIComponent(`Portfolio contact from ${data.name}`);
+        window.open(`mailto:${meta.email}?subject=${subject}&body=${body}`);
+        setStatus("error");
+        setTimeout(() => setStatus("idle"), 4000);
+      }
+    } catch {
+      // Network error — fallback to mailto
+      const body = encodeURIComponent(
+        `${data.message}\n\n— ${data.name} (${data.email})`
+      );
+      const subject = encodeURIComponent(`Portfolio contact from ${data.name}`);
+      window.open(`mailto:${meta.email}?subject=${subject}&body=${body}`);
+      setStatus("error");
+      setTimeout(() => setStatus("idle"), 4000);
+    }
   };
 
   const field =
@@ -59,8 +106,8 @@ export function Contact() {
             Let&apos;s connect.
           </h2>
           <p className="mt-4 max-w-md text-text-muted">
-            Always glad to talk about production ML, retrieval that behaves, or the
-            unglamorous engineering that keeps AI honest in regulated environments.
+            Always glad to talk about production ML, agentic systems, retrieval that
+            behaves, or the unglamorous engineering that keeps AI honest.
           </p>
 
           <div className="mt-8 flex flex-col">
@@ -92,21 +139,25 @@ export function Contact() {
             className="rounded-xl border border-border bg-bg-elev p-6"
             noValidate
           >
-            <div className="hidden">
-              <label>
-                Company
-                <input tabIndex={-1} autoComplete="off" {...register("company")} />
-              </label>
+            {/* honeypot — hidden from humans, bots fill it */}
+            <div className="hidden" aria-hidden>
+              <input tabIndex={-1} autoComplete="off" {...register("_gotcha")} />
             </div>
 
             <div className="space-y-4">
               <div>
                 <label className="mb-1.5 block text-sm text-text-muted">Name</label>
-                <input className={field} placeholder="Your name" suppressHydrationWarning {...register("name")} />
+                <input
+                  className={field}
+                  placeholder="Your name"
+                  suppressHydrationWarning
+                  {...register("name")}
+                />
                 {errors.name && (
                   <p className="mt-1 text-xs text-red-400">{errors.name.message}</p>
                 )}
               </div>
+
               <div>
                 <label className="mb-1.5 block text-sm text-text-muted">Email</label>
                 <input
@@ -119,6 +170,7 @@ export function Contact() {
                   <p className="mt-1 text-xs text-red-400">{errors.email.message}</p>
                 )}
               </div>
+
               <div>
                 <label className="mb-1.5 block text-sm text-text-muted">Message</label>
                 <textarea
@@ -135,18 +187,22 @@ export function Contact() {
 
               <motion.button
                 type="submit"
-                disabled={isSubmitting || sent}
+                disabled={status === "sending" || status === "sent"}
                 whileTap={{ scale: 0.97 }}
                 suppressHydrationWarning
                 className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-medium text-white transition-all hover:brightness-110 disabled:opacity-70"
               >
-                {sent ? (
+                {status === "sent" ? (
                   <>
-                    <Check size={16} /> Opening your mail client…
+                    <Check size={16} /> Message sent — I&apos;ll be in touch!
                   </>
-                ) : isSubmitting ? (
+                ) : status === "sending" ? (
                   <>
                     <Loader2 size={16} className="animate-spin" /> Sending…
+                  </>
+                ) : status === "error" ? (
+                  <>
+                    <AlertCircle size={16} /> Opened mail client as fallback
                   </>
                 ) : (
                   <>
@@ -154,6 +210,12 @@ export function Contact() {
                   </>
                 )}
               </motion.button>
+
+              {status === "sent" && (
+                <p className="text-center text-xs text-text-muted">
+                  Your message has been delivered to my inbox directly.
+                </p>
+              )}
             </div>
           </form>
         </Reveal>

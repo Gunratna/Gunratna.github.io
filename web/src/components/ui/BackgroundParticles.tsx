@@ -23,6 +23,16 @@ export function BackgroundParticles() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    // respect the stored preference
+    let enabled = true;
+    try { if (localStorage.getItem("gb-particles") === "off") enabled = false; } catch {}
+
+    const onToggle = (e: Event) => {
+      enabled = (e as CustomEvent<boolean>).detail;
+      if (!enabled) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    };
+    window.addEventListener("gb-particles-toggle", onToggle);
+
     const N = 55;
     let w = 0, h = 0;
     const mouse = { x: -9999, y: -9999 };
@@ -60,6 +70,7 @@ export function BackgroundParticles() {
 
     const draw = (now: number) => {
       raf = requestAnimationFrame(draw);
+      if (!enabled) return;
       if (now - last < FRAME) return;
       last = now;
 
@@ -137,6 +148,7 @@ export function BackgroundParticles() {
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseout", onLeave);
+      window.removeEventListener("gb-particles-toggle", onToggle);
     };
   }, [quality]);
 
