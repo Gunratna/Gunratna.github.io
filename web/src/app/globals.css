@@ -1,0 +1,173 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Amber editorial theme — paper & ink with a single warm accent.
+   Deliberately avoids the generic neon-blue/purple AI look.
+   ============================================================ */
+:root,
+[data-theme="dark"] {
+  --bg: #15130f;
+  --bg-elev: #1c1a15;
+  --bg-elev-2: #242019;
+  --text: #f2ede3;
+  --text-muted: #b3a995;
+  --text-dim: #8a8170;
+  --accent: #c97c2f;        /* warm ochre / amber */
+  --accent-soft: rgba(201, 124, 47, 0.12);
+  --accent-2: #a8612a;
+  --border: #2f2a22;
+  --border-strong: #463f33;
+  --paper-line: rgba(242, 237, 227, 0.04);
+  --glass: rgba(28, 26, 21, 0.62);
+}
+
+[data-theme="light"] {
+  --bg: #f6f1e7;
+  --bg-elev: #fffdf8;
+  --bg-elev-2: #efe8d9;
+  --text: #221d15;
+  --text-muted: #5c5444;
+  --text-dim: #877d68;
+  --accent: #b5651d;        /* deeper ochre for contrast on paper */
+  --accent-soft: rgba(181, 101, 29, 0.10);
+  --accent-2: #97511a;
+  --border: #ddd3bf;
+  --border-strong: #c9bca0;
+  --paper-line: rgba(34, 29, 21, 0.04);
+  --glass: rgba(255, 253, 248, 0.66);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-elev: var(--bg-elev);
+  --color-bg-elev-2: var(--bg-elev-2);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-text-dim: var(--text-dim);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
+  --font-display: var(--font-fraunces);
+}
+
+* {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  /* faint paper grid — editorial, not techy */
+  background-image:
+    linear-gradient(var(--paper-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 6px;
+  border: 2px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+@layer utilities {
+  .glass {
+    background: var(--glass);
+    backdrop-filter: saturate(150%) blur(12px);
+    -webkit-backdrop-filter: saturate(150%) blur(12px);
+  }
+  .font-display {
+    font-family: var(--font-fraunces), Georgia, serif;
+  }
+  .font-mono {
+    font-family: var(--font-jetbrains), ui-monospace, monospace;
+  }
+  .section-pad {
+    padding-top: 7rem;
+    padding-bottom: 7rem;
+  }
+  .text-accent-ink {
+    color: var(--accent);
+  }
+}
+
+/* ---- Animations ---- */
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.cursor-blink::after {
+  content: "▋";
+  margin-left: 2px;
+  animation: blink 1s step-end infinite;
+  color: var(--accent);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.animate-float { animation: float 6s ease-in-out infinite; }
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* dash flow used by the live architecture diagram edges */
+@keyframes dashflow {
+  to { stroke-dashoffset: -16; }
+}
+
+/* Custom cursor — OS cursor is kept visible; only canvas overlay hides nothing */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-float { animation: none !important; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-elev) 25%, var(--bg-elev-2) 50%, var(--bg-elev) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}

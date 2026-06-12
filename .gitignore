@@ -1,0 +1,24 @@
+# Next.js
+web/.next/
+web/out/
+web/node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env files — never commit secrets
+*.env*
+.env.local
+.env.production
+
+# IDE
+.vscode/settings.json
+
+# Playwright / audit artifacts
+web/audit/
+web/scripts/
+
+# Build tool caches
+*.cache
+.turbo/
