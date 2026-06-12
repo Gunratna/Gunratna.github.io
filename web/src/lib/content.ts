@@ -18,7 +18,7 @@ export const meta = {
     "Building production-grade Agentic AI systems, LLM fine-tuning pipelines, and RAG-based document intelligence — serving 23 AMCs and Rs.47L Cr+ AUM at CAMS.",
   siteUrl: "https://gunratna.github.io",
   // Paste the token from Google Search Console (HTML tag verification) here:
-  googleVerification: "",
+  googleVerification: "y1ohyxX10qJpoxuBWhT8hnyoGUKhRX0THkr5qRn8fZ4",
   /**
    * Formspree endpoint for the contact form.
    * Steps:
