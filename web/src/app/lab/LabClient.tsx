@@ -4,23 +4,25 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft, Construction, Bot, FileSearch, Eye,
+  ArrowLeft, Construction, Bot, FileSearch, Eye, ScanEye,
   Cpu, GitBranch, Boxes, Clock, ChevronDown, ChevronUp,
 } from "lucide-react";
 import { projects } from "@/lib/content";
 
 /* ── type → icon ─────────────────────────────────────────── */
-const TYPE_ICON = { LLM: Bot, RAG: FileSearch, Vision: Eye, Agentic: GitBranch };
+const TYPE_ICON = { LLM: Bot, RAG: FileSearch, Vision: Eye, VLM: ScanEye, Agentic: GitBranch };
 const TYPE_COLOR: Record<string, string> = {
   LLM: "text-amber-400",
   RAG: "text-sky-400",
   Vision: "text-emerald-400",
+  VLM: "text-rose-400",
   Agentic: "text-purple-400",
 };
 const TYPE_BG: Record<string, string> = {
   LLM: "bg-amber-400/10",
   RAG: "bg-sky-400/10",
   Vision: "bg-emerald-400/10",
+  VLM: "bg-rose-400/10",
   Agentic: "bg-purple-400/10",
 };
 

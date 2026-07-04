@@ -183,7 +183,7 @@ export type Project = {
   subtitle: string;
   tagline: string;
   year: number;
-  type: "LLM" | "Vision" | "Agentic" | "RAG";
+  type: "LLM" | "Vision" | "Agentic" | "RAG" | "VLM";
   featured: boolean;
   experimental?: boolean;
   outcomes: { label: string; value: string }[];
@@ -396,6 +396,59 @@ export const projects: Project[] = [
         ["rev", "human"],
         ["human", "deploy", "approved"],
         ["human", "orch", "changes"],
+      ],
+    },
+  },
+  {
+    id: "mf-redemption-vlm",
+    name: "MF Redemption Extraction",
+    subtitle: "On-prem VLM form intelligence",
+    tagline:
+      "On-prem vision-language pipeline reading structured fields off scanned redemption forms — replacing a cloud LLM with a fine-tuned, self-hosted model on a single GPU.",
+    year: 2026,
+    type: "VLM",
+    featured: true,
+    experimental: true,
+    outcomes: [
+      { label: "Reader accuracy (LoRA FT)", value: "10.7%→28.1%" },
+      { label: "Zero-shot VLM (macro-recall)", value: "29.6%" },
+      { label: "Throughput", value: "~250 forms/hr" },
+      { label: "Data residency", value: "100% on-prem" },
+    ],
+    tech: [
+      "Florence-2",
+      "Gemma-3",
+      "LoRA / QLoRA",
+      "PyTorch",
+      "Hugging Face Transformers",
+      "bitsandbytes",
+      "NVIDIA L4",
+    ],
+    details: [
+      "Built a custom offline annotation tool (zero network dependency; PNG/JPG/multi-page TIFF; canvas box+value labelling) so investor documents never leave the annotator's machine, validated end-to-end with headless Playwright tests. Splits are frozen and hashed 70/15/15 by form — never by crop — to eliminate train/test leakage.",
+      "Fine-tuned a Florence-2 Reader via LoRA (Locator and Reader as separate adapters, never stacked) on the annotated crops, lifting field-reading macro-recall from 10.7% to 28.1% on a held-out test split, with the largest gains on folio numbers, ARNs, EUINs, and timestamps.",
+      "Benchmarked zero-shot end-to-end VLMs (Gemma-3, Phi-3.5-Vision, SmolVLM2) as a boxless page-to-JSON alternative to the staged pipeline; root-caused a 'prompt parroting' failure mode (the model copying illustrative example values instead of reading the form) and applied Pan-and-Scan tiling for small handwriting — pushing Gemma-3 to 29.6% zero-shot, past the fine-tuned-with-boxes Florence ceiling. Now LoRA fine-tuning the VLM itself.",
+    ],
+    arch: {
+      caption:
+        "Two extraction paths — a fine-tuned Florence-2 staged pipeline and a zero-shot Gemma-3 VLM — are benchmarked on a frozen test split; the stronger, boxless approach is carried forward.",
+      nodes: [
+        { id: "in", label: "Scanned form", sub: "TIFF · on-prem only", kind: "io" },
+        { id: "locate", label: "Locator", sub: "Florence-2 grounding", kind: "model" },
+        { id: "read", label: "Reader", sub: "Florence-2 + LoRA", kind: "model" },
+        { id: "vlm", label: "Gemma-3 VLM", sub: "end-to-end · zero-shot", kind: "model" },
+        { id: "rules", label: "Rules + scoring", sub: "normalize · fuzzy · CER", kind: "process" },
+        { id: "decide", label: "Compare & select", sub: "staged vs end-to-end", kind: "decision" },
+        { id: "out", label: "9 structured fields", sub: "folio · amount · ARN…", kind: "store" },
+      ],
+      edges: [
+        ["in", "locate"],
+        ["locate", "read"],
+        ["read", "rules"],
+        ["in", "vlm", "page→JSON"],
+        ["vlm", "rules"],
+        ["rules", "decide"],
+        ["decide", "out", "Gemma-3, 29.6%"],
       ],
     },
   },
