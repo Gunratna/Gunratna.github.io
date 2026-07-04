@@ -8,7 +8,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { ProjectModal } from "@/components/ui/ProjectModal";
 
-const FILTERS = ["All", "LLM", "RAG", "Vision", "VLM", "Agentic"] as const;
+const FILTERS = ["All", "VLM", "Agentic", "LLM", "RAG", "Vision"] as const;
 
 export function Projects() {
   const [active, setActive] = useState<(typeof FILTERS)[number]>("All");
