@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles, SparklesIcon } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
