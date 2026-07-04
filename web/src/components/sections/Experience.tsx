@@ -7,6 +7,7 @@ import { Reveal } from "@/components/ui/Reveal";
 
 const ROLE_CHIPS: Record<string, { label: string; href: string }[]> = {
   CAMS: [
+    { label: "vlm-forms", href: "#projects" },
     { label: "email-bot", href: "#projects" },
     { label: "sebi", href: "#projects" },
     { label: "agentic-ci/cd", href: "#projects" },

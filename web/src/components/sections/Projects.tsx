@@ -26,7 +26,7 @@ export function Projects() {
               key={f}
               onClick={() => setActive(f)}
               suppressHydrationWarning
-              className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
+              className={`min-w-24 rounded-full border px-4 py-1.5 text-center text-sm transition-colors ${
                 active === f
                   ? "border-accent bg-accent/10 text-accent"
                   : "border-border text-text-muted hover:border-border-strong hover:text-text"

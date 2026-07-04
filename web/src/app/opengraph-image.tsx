@@ -45,7 +45,7 @@ export default function OGImage() {
             Gunratna Borkar
           </div>
           <div style={{ color: "#c97c2f", fontSize: 34, marginTop: 18 }}>
-            Agentic AI · LLM Fine-tuning · RAG Pipelines
+            Agentic AI · LLM/VLM Fine-tuning · RAG
           </div>
         </div>
 

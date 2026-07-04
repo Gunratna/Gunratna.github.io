@@ -15,7 +15,7 @@ export const meta = {
   resume: "/Gunratna_Resume_08_06.pdf",
   location: "India",
   tagline:
-    "Building production-grade Agentic AI systems, LLM fine-tuning pipelines, and RAG-based document intelligence — serving 23 AMCs and Rs.47L Cr+ AUM at CAMS.",
+    "Building production-grade Agentic AI systems, LLM/VLM fine-tuning pipelines, and RAG-based document intelligence — serving 23 AMCs and Rs.47L Cr+ AUM at CAMS.",
   siteUrl: "https://gunratna.github.io",
   // Paste the token from Google Search Console (HTML tag verification) here:
   googleVerification: "y1ohyxX10qJpoxuBWhT8hnyoGUKhRX0THkr5qRn8fZ4",
@@ -46,7 +46,7 @@ export const profileCard = {
   openTo: ["AI Engineering", "Data Science"],
   rows: [
     { k: "Role", v: "Sr. AI Engineer @ CAMS" },
-    { k: "Focus", v: "Agentic Systems · LLM Fine-Tuning · RAG" },
+    { k: "Focus", v: "Agentic Systems · LLM/VLM Fine-Tuning · RAG" },
     { k: "Scale", v: "23 AMCs · Rs.47L Cr+ AUM" },
     { k: "Education", v: "IIT Bombay — Dual Degree" },
   ],
@@ -61,7 +61,7 @@ export const about = {
     "$ whoami",
     "gunratna — sr. ai engineer @ cams",
     "$ cat focus.txt",
-    "agentic systems · llm fine-tuning · rag · document intelligence",
+    "agentic systems · llm/vlm fine-tuning · rag · document intelligence",
     "$ cat scale.txt",
     "23 AMCs · Rs.47L Cr+ AUM · 10k+ emails/day",
   ],
@@ -77,7 +77,7 @@ export const about = {
 export const skills: { group: string; items: string[] }[] = [
   {
     group: "LLM & Agents",
-    items: ["Fine-tuning (QLoRA)", "LangGraph", "PydanticAI", "LangChain", "vLLM", "RAG"],
+    items: ["Fine-tuning (LoRA/QLoRA)", "Gemma-3", "Florence-2", "LangGraph", "PydanticAI", "LangChain", "vLLM", "RAG"],
   },
   {
     group: "ML / Vision",
@@ -135,8 +135,9 @@ export const experience: Experience[] = [
     period: "Jul 2024 — Present",
     note: "India's largest RTA · 23 AMCs · Rs.47L Cr+ AUM",
     description:
-      "Building production-grade Agentic AI systems, LLM fine-tuning pipelines, and RAG-based document intelligence for investor operations.",
+      "Building production-grade Agentic AI systems, LLM/VLM fine-tuning pipelines, and RAG-based document intelligence for investor operations.",
     highlights: [
+      "MF Redemption Extraction: fine-tuned Gemma-3 VLM (LoRA) reading redemption forms fully on-prem, 91% macro-recall, replacing a 5-call-per-form Gemini pipeline",
       "Email BOT: multi-stage ML + LLM agentic pipeline processing 10k+ investor emails/day, automating 80% of manual triage",
       "SEBI Debarred Entities: RAG pipeline for regulatory document intelligence, 50% reduction in manual reviews",
       "Aadhaar PII Redaction & GST Invoice Extraction: computer-vision pipelines for compliance and OCR",

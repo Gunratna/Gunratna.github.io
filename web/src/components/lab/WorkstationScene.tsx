@@ -32,6 +32,7 @@ const C = {
   blue: "#4a7a9b",
   purple: "#7a5fa0",
   red: "#9b4a4a",
+  rose: "#b8577a",
   text: "#f2ede3",
   keyTop: "#3a342a",
   mug: "#9c4a2a",
@@ -227,6 +228,7 @@ function Bookshelf() {
     "RAG Techniques",
     "PyTorch 2.0",
     "System Design",
+    "VLM Fine-tuning",
   ];
   return (
     <group position={[-7.4, -0.1, -4.5]}>
@@ -624,6 +626,7 @@ function AgentWhiteboard({ onInfo }: { onInfo: (p: string, msg: string) => void 
 
 function FloatingNodes({ onInfo }: { onInfo: (p: string, msg: string) => void }) {
   const nodeData = [
+    { id: "mf-redemption-vlm", label: "Redemption VLM", pos: [-4.2, 2.1, 0.6] as [number, number, number], color: C.rose },
     { id: "email-bot", label: "Email BOT", pos: [-2.5, 2.0, 1.0] as [number, number, number], color: C.accent },
     { id: "sebi-debarred", label: "SEBI RAG", pos: [0, 2.4, 1.2] as [number, number, number], color: C.blue },
     { id: "gitlab-agentic", label: "Agentic CI/CD", pos: [2.5, 2.1, 0.8] as [number, number, number], color: C.purple },
@@ -756,6 +759,7 @@ function Scene({
 /* ===================== ROOT EXPORT ===================== */
 
 const PROJECT_DESCRIPTIONS: Record<string, string> = {
+  "mf-redemption-vlm": "🏦 Fine-tuned Gemma-3 4B (LoRA, rank 8) reads mutual-fund redemption forms fully on-prem, replacing a 5-call-per-form Gemini pipeline. 91% macro-recall vs. a 60% Florence-2 LoRA ceiling. 100% on-prem — data never leaves the premises.",
   "email-bot": "📧 Multi-stage ML + LLM pipeline processing 10k+ investor emails/day. 3-tier junk detection (Rules → PyTorch → Semantic rescue) feeds a Gemini 2.5 Flash intent engine extracting PAN, folios, ARNs across 23 intents. 80% automated, 0.1% FN, <500ms p95.",
   "sebi-debarred": "📋 SEBI RAG: FAISS page-relevance scoring + Gemini 2.5 Flash with schema-constrained output. Multimodal routing handles text (Camelot) and scanned (Gemini Vision) PDFs. 50% review reduction, 6K+ orders evaluated.",
   "aadhaar-redaction": "🔐 ResNet/EfficientNet classifies Aadhaar pages in multi-page TIFFs. YOLO bounding-box detection masks first 8 of 12 digits. DPDP Act compliant.",
