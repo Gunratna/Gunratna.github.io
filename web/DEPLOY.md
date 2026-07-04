@@ -139,6 +139,23 @@ Search Console speeds it up significantly.
 
 ---
 
+## Part E — Analytics (optional, privacy-friendly)
+
+The site is wired for **GoatCounter** — free, open-source, cookieless, and
+GDPR-friendly, so no cookie-consent banner is required. Nothing loads until you
+enable it, so there's no tracking or extra request by default.
+
+To turn it on:
+
+1. Sign up at https://www.goatcounter.com and choose a code (e.g. `gunratna`).
+2. In `web/src/lib/content.ts`, set `goatCounterCode: "gunratna"` (your code).
+3. Commit & push. Your dashboard is at `https://<code>.goatcounter.com`.
+
+Prefer a different provider (Cloudflare Web Analytics, Plausible, Umami)? Swap
+the tag in `web/src/components/Analytics.tsx` — it's a single `<Script>`.
+
+---
+
 ## Troubleshooting
 
 - **Blank page / 404 on assets after deploy (Option 2):** `BASE_PATH` not set or

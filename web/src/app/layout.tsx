@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono, Fraunces } from "next/font/google";
 import "./globals.css";
 import { meta } from "@/lib/content";
 import { QualityProvider } from "@/components/providers/QualityProvider";
+import { Analytics } from "@/components/Analytics";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -173,6 +174,7 @@ export default function RootLayout({
       </head>
       <body>
         <QualityProvider>{children}</QualityProvider>
+        <Analytics />
       </body>
     </html>
   );

@@ -29,6 +29,16 @@ export const meta = {
    * Free tier: 50 submissions/month.
    */
   formspreeId: "xzdqjnzr", // Formspree form ID — delivers contact form submissions to borkargunratna400@gmail.com
+  /**
+   * Privacy-friendly analytics via GoatCounter — free, open-source, cookieless,
+   * GDPR-friendly (no consent banner needed), and invisible to visitors.
+   * Steps:
+   *   1. Sign up at https://www.goatcounter.com and pick a code (e.g. "gunratna").
+   *   2. Paste that code below. Your dashboard lives at https://<code>.goatcounter.com
+   * Leave empty to disable — no script loads and no external request is made.
+   * (Prefer Cloudflare Web Analytics or Plausible? Swap the tag in Analytics.tsx.)
+   */
+  goatCounterCode: "",
 } as const;
 
 /* A subtle "currently" profile card — open roles shown as compact badges. */
@@ -45,7 +55,7 @@ export const profileCard = {
 export const about = {
   bio: [
     "I'm an AI Engineer at CAMS — India's largest mutual fund registrar and transfer agent — where I build production LLM and ML systems for investor operations across 23 asset management companies.",
-    "My work spans LLM/SLM fine-tuning, retrieval pipelines, and document intelligence, deployed on GCP-native MLOps. Before CAMS, I trained as a Dual Degree student at IIT Bombay and interned in data science.",
+    "My work spans LLM/SLM fine-tuning, retrieval pipelines, and document intelligence, deployed on GCP-native MLOps. Before CAMS, I completed a Dual Degree (B.Tech + M.Tech) at IIT Bombay and interned in data science.",
   ],
   terminalLines: [
     "$ whoami",
