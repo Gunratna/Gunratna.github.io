@@ -6,6 +6,7 @@ import { X, GitBranch, ListChecks } from "lucide-react";
 import type { Project } from "@/lib/content";
 import { GithubIcon } from "@/components/ui/BrandIcons";
 import { ArchDiagram } from "@/components/ui/ArchDiagram";
+import { useFocusTrap } from "@/lib/useFocusTrap";
 
 export function ProjectModal({
   project,
@@ -15,6 +16,7 @@ export function ProjectModal({
   onClose: () => void;
 }) {
   const [tab, setTab] = useState<"architecture" | "details">("architecture");
+  const trapRef = useFocusTrap<HTMLDivElement>(true);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -41,6 +43,7 @@ export function ProjectModal({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 24, scale: 0.98 }}
           transition={{ type: "spring", stiffness: 260, damping: 26 }}
+          ref={trapRef}
           role="dialog"
           aria-modal="true"
           aria-label={`${project.name} details`}

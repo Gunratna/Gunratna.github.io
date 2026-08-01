@@ -17,6 +17,7 @@ import {
   CornerDownLeft,
 } from "lucide-react";
 import { meta } from "@/lib/content";
+import { useFocusTrap } from "@/lib/useFocusTrap";
 
 type Cmd = {
   id: string;
@@ -36,6 +37,7 @@ export function CommandPalette() {
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const trapRef = useFocusTrap<HTMLDivElement>(open);
   const router = useRouter();
 
   const commands = useMemo<Cmd[]>(
@@ -142,6 +144,7 @@ export function CommandPalette() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -16, scale: 0.98 }}
             transition={{ type: "spring", stiffness: 300, damping: 26 }}
+            ref={trapRef}
             role="dialog"
             aria-modal="true"
             aria-label="Command palette"

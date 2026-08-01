@@ -146,42 +146,66 @@ export function Contact() {
 
             <div className="space-y-4">
               <div>
-                <label className="mb-1.5 block text-sm text-text-muted">Name</label>
+                <label htmlFor="contact-name" className="mb-1.5 block text-sm text-text-muted">
+                  Name
+                </label>
                 <input
+                  id="contact-name"
                   className={field}
                   placeholder="Your name"
+                  autoComplete="name"
+                  aria-invalid={errors.name ? "true" : undefined}
+                  aria-describedby={errors.name ? "contact-name-error" : undefined}
                   suppressHydrationWarning
                   {...register("name")}
                 />
                 {errors.name && (
-                  <p className="mt-1 text-xs text-red-400">{errors.name.message}</p>
+                  <p id="contact-name-error" className="mt-1 text-xs text-red-400">
+                    {errors.name.message}
+                  </p>
                 )}
               </div>
 
               <div>
-                <label className="mb-1.5 block text-sm text-text-muted">Email</label>
+                <label htmlFor="contact-email" className="mb-1.5 block text-sm text-text-muted">
+                  Email
+                </label>
                 <input
+                  id="contact-email"
+                  type="email"
                   className={field}
                   placeholder="you@example.com"
+                  autoComplete="email"
+                  aria-invalid={errors.email ? "true" : undefined}
+                  aria-describedby={errors.email ? "contact-email-error" : undefined}
                   suppressHydrationWarning
                   {...register("email")}
                 />
                 {errors.email && (
-                  <p className="mt-1 text-xs text-red-400">{errors.email.message}</p>
+                  <p id="contact-email-error" className="mt-1 text-xs text-red-400">
+                    {errors.email.message}
+                  </p>
                 )}
               </div>
 
               <div>
-                <label className="mb-1.5 block text-sm text-text-muted">Message</label>
+                <label htmlFor="contact-message" className="mb-1.5 block text-sm text-text-muted">
+                  Message
+                </label>
                 <textarea
+                  id="contact-message"
                   rows={4}
                   className={`${field} resize-none`}
                   placeholder="What's on your mind?"
+                  aria-invalid={errors.message ? "true" : undefined}
+                  aria-describedby={errors.message ? "contact-message-error" : undefined}
                   suppressHydrationWarning
                   {...register("message")}
                 />
                 {errors.message && (
-                  <p className="mt-1 text-xs text-red-400">{errors.message.message}</p>
+                  <p id="contact-message-error" className="mt-1 text-xs text-red-400">
+                    {errors.message.message}
+                  </p>
                 )}
               </div>
 

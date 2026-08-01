@@ -1,13 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft, Construction, Bot, FileSearch, Eye, ScanEye,
-  Cpu, GitBranch, Boxes, Clock, ChevronDown, ChevronUp,
+  ArrowLeft, Bot, FileSearch, Eye, ScanEye,
+  Cpu, GitBranch, Boxes, ChevronDown, ChevronUp, Loader2, MousePointer2, Play,
 } from "lucide-react";
 import { projects } from "@/lib/content";
+import { useWebGLSupport } from "@/lib/useWebGLSupport";
+import { VIBE_LIST, type VibeId } from "@/components/lab/vibes";
+import { LabErrorBoundary } from "@/components/lab/LabErrorBoundary";
+import { WorldFallback } from "@/components/lab/overlays/WorldFallback";
+
+const World = dynamic(() => import("@/components/lab/World"), {
+  ssr: false,
+  loading: () => (
+    <div className="grid h-full w-full place-items-center text-text-dim">
+      <span className="inline-flex items-center gap-2 font-mono text-xs">
+        <Loader2 size={14} className="animate-spin" /> loading the room…
+      </span>
+    </div>
+  ),
+});
 
 /* ── type → icon ─────────────────────────────────────────── */
 const TYPE_ICON = { LLM: Bot, RAG: FileSearch, Vision: Eye, VLM: ScanEye, Agentic: GitBranch };
@@ -26,178 +42,122 @@ const TYPE_BG: Record<string, string> = {
   Agentic: "bg-purple-400/10",
 };
 
-/* ── animated 3D workstation teaser (pure canvas) ────────── */
-function WorkstationTeaser() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const W = canvas.offsetWidth;
-    const H = canvas.offsetHeight;
-    canvas.width = W;
-    canvas.height = H;
-
-    const ACCENT = "#e08a33";
-    const DIM = "#3a3020";
-
-    // desk outline vertices (isometric view)
-    const desk = [
-      [W * 0.2, H * 0.55], [W * 0.8, H * 0.55],
-      [W * 0.8, H * 0.75], [W * 0.2, H * 0.75],
-    ];
-
-    // monitor frame
-    const mon = {
-      x: W * 0.38, y: H * 0.2, w: W * 0.24, h: H * 0.28,
-    };
-
-    // floating node positions
-    const nodes = [
-      { x: W * 0.22, y: H * 0.3, label: "Ingest", phase: 0 },
-      { x: W * 0.40, y: H * 0.18, label: "Classify", phase: 1.2 },
-      { x: W * 0.60, y: H * 0.22, label: "Intent", phase: 2.4 },
-      { x: W * 0.78, y: H * 0.32, label: "Respond", phase: 3.6 },
-    ];
-
-    // signal state
-    const signals: { seg: number; t: number; speed: number }[] = [
-      { seg: 0, t: 0, speed: 0.008 },
-      { seg: 1, t: 0.4, speed: 0.007 },
-      { seg: 2, t: 0.8, speed: 0.009 },
-    ];
-
-    let raf = 0;
-
-    const draw = (time: number) => {
-      raf = requestAnimationFrame(draw);
-      ctx.clearRect(0, 0, W, H);
-
-      const t = time * 0.001;
-
-      // desk
-      ctx.beginPath();
-      ctx.moveTo(desk[0][0], desk[0][1]);
-      desk.forEach(([x, y]) => ctx.lineTo(x, y));
-      ctx.closePath();
-      ctx.fillStyle = "#1a1610";
-      ctx.fill();
-      ctx.strokeStyle = DIM;
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-
-      // monitor
-      ctx.fillStyle = "#111";
-      ctx.fillRect(mon.x, mon.y, mon.w, mon.h);
-      ctx.strokeStyle = DIM;
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(mon.x, mon.y, mon.w, mon.h);
-      // screen glow
-      const grd = ctx.createLinearGradient(mon.x, mon.y, mon.x, mon.y + mon.h);
-      grd.addColorStop(0, "rgba(224,138,51,0.07)");
-      grd.addColorStop(1, "rgba(224,138,51,0.02)");
-      ctx.fillStyle = grd;
-      ctx.fillRect(mon.x + 2, mon.y + 2, mon.w - 4, mon.h - 4);
-
-      // fake code lines on monitor
-      for (let i = 0; i < 6; i++) {
-        const lw = mon.w * (0.3 + Math.sin(i * 2.1) * 0.25);
-        ctx.fillStyle = i === 2 ? ACCENT + "80" : "#3a342870";
-        ctx.fillRect(mon.x + 12, mon.y + 16 + i * 16, lw, 5);
-      }
-
-      // connections between nodes
-      for (let i = 0; i < nodes.length - 1; i++) {
-        const a = nodes[i];
-        const b = nodes[i + 1];
-        ctx.beginPath();
-        ctx.moveTo(
-          a.x + Math.sin(t * 0.4 + a.phase) * 3,
-          a.y + Math.cos(t * 0.3 + a.phase) * 3
-        );
-        ctx.lineTo(
-          b.x + Math.sin(t * 0.4 + b.phase) * 3,
-          b.y + Math.cos(t * 0.3 + b.phase) * 3
-        );
-        ctx.strokeStyle = ACCENT + "30";
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
-
-      // signals
-      for (const sig of signals) {
-        sig.t = (sig.t + sig.speed) % 1;
-        const seg = sig.seg;
-        const a = nodes[seg];
-        const b = nodes[seg + 1];
-        const ax = a.x + Math.sin(t * 0.4 + a.phase) * 3;
-        const ay = a.y + Math.cos(t * 0.3 + a.phase) * 3;
-        const bx = b.x + Math.sin(t * 0.4 + b.phase) * 3;
-        const by = b.y + Math.cos(t * 0.3 + b.phase) * 3;
-        const sx = ax + (bx - ax) * sig.t;
-        const sy = ay + (by - ay) * sig.t;
-        const fade = Math.sin(sig.t * Math.PI);
-        ctx.beginPath();
-        ctx.arc(sx, sy, 3.5 * fade, 0, Math.PI * 2);
-        ctx.fillStyle = ACCENT;
-        ctx.globalAlpha = fade * 0.9;
-        ctx.fill();
-        ctx.globalAlpha = 1;
-      }
-
-      // floating nodes
-      for (const n of nodes) {
-        const nx = n.x + Math.sin(t * 0.4 + n.phase) * 3;
-        const ny = n.y + Math.cos(t * 0.3 + n.phase) * 3;
-        // glow
-        const g = ctx.createRadialGradient(nx, ny, 0, nx, ny, 18);
-        g.addColorStop(0, ACCENT + "50");
-        g.addColorStop(1, "transparent");
-        ctx.fillStyle = g;
-        ctx.beginPath();
-        ctx.arc(nx, ny, 18, 0, Math.PI * 2);
-        ctx.fill();
-        // node
-        ctx.beginPath();
-        ctx.arc(nx, ny, 8, 0, Math.PI * 2);
-        ctx.fillStyle = ACCENT;
-        ctx.fill();
-        // pulsing ring
-        const ring = (t * 0.6 + n.phase) % 1;
-        ctx.beginPath();
-        ctx.arc(nx, ny, 8 + ring * 16, 0, Math.PI * 2);
-        ctx.strokeStyle = ACCENT;
-        ctx.lineWidth = 1;
-        ctx.globalAlpha = (1 - ring) * 0.4;
-        ctx.stroke();
-        ctx.globalAlpha = 1;
-        // label
-        ctx.font = `10px monospace`;
-        ctx.fillStyle = "#f2ede3";
-        ctx.textAlign = "center";
-        ctx.fillText(n.label, nx, ny + 24);
-      }
-
-      // "drag to orbit" hint
-      ctx.font = "11px monospace";
-      ctx.fillStyle = "#8a817080";
-      ctx.textAlign = "center";
-      ctx.fillText("↺  Interactive 3D workstation coming soon", W / 2, H - 14);
-    };
-
-    raf = requestAnimationFrame(draw);
-    return () => cancelAnimationFrame(raf);
-  }, []);
+/* ── 3D world stage (with graceful WebGL fallback + click-to-enter) ── */
+function WorldStage() {
+  const webgl = useWebGLSupport();
+  const [vibe, setVibe] = useState<VibeId>("study");
+  const [entered, setEntered] = useState(false);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="h-full w-full"
-      aria-label="Animated preview of the 3D workstation"
-    />
+    <div
+      role="region"
+      aria-label="Interactive 3D workstation scene"
+      className="relative mb-14 h-[68vh] min-h-[420px] overflow-hidden rounded-2xl border border-border bg-bg-elev-2"
+    >
+      {webgl === false ? (
+        <WorldFallback />
+      ) : webgl === true && entered ? (
+        <>
+          <LabErrorBoundary
+            fallback={
+              <WorldFallback
+                title="The 3D scene hit a snag"
+                message="Something went wrong while rendering the room."
+              />
+            }
+          >
+            <World vibeId={vibe} />
+          </LabErrorBoundary>
+
+          {/* vibe switcher */}
+          <div className="absolute left-4 top-4 flex flex-col gap-1.5 rounded-xl border border-white/10 bg-black/40 p-1.5 backdrop-blur-md">
+            {VIBE_LIST.map((v) => (
+              <button
+                key={v.id}
+                onClick={() => setVibe(v.id)}
+                aria-pressed={vibe === v.id}
+                className={`flex flex-col rounded-lg px-3 py-1.5 text-left transition-colors ${
+                  vibe === v.id
+                    ? "bg-white/15 text-white"
+                    : "text-white/60 hover:bg-white/5 hover:text-white/90"
+                }`}
+              >
+                <span className="text-sm font-medium">{v.label}</span>
+                <span className="font-mono text-[10px] text-white/50">{v.blurb}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2">
+            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-bg/70 px-3 py-1.5 font-mono text-[11px] text-text-muted backdrop-blur-sm">
+              <MousePointer2 size={13} /> drag to orbit · scroll to zoom · click a marker
+            </span>
+          </div>
+        </>
+      ) : webgl === true && !entered ? (
+        <EnterGate vibe={vibe} setVibe={setVibe} onEnter={() => setEntered(true)} />
+      ) : (
+        <div className="grid h-full w-full place-items-center text-text-dim">
+          <span className="inline-flex items-center gap-2 font-mono text-xs">
+            <Loader2 size={14} className="animate-spin" /> checking capabilities…
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── entry poster: defers loading the 3D bundle + assets until intent ── */
+function EnterGate({
+  vibe,
+  setVibe,
+  onEnter,
+}: {
+  vibe: VibeId;
+  setVibe: (v: VibeId) => void;
+  onEnter: () => void;
+}) {
+  return (
+    <div className="grid h-full w-full place-items-center bg-gradient-to-b from-bg-elev-2 to-bg p-8 text-center">
+      <div className="max-w-md">
+        <span className="grid h-14 w-14 place-items-center mx-auto rounded-2xl border border-accent/30 bg-accent-soft text-accent">
+          <Boxes size={26} />
+        </span>
+        <h2 className="mt-5 font-display text-2xl font-medium">Enter the workstation</h2>
+        <p className="mt-2 text-sm text-text-muted">
+          A real-time 3D room you can orbit and explore. Pick a vibe, then step in —
+          it loads only when you&apos;re ready.
+        </p>
+
+        <div className="mt-6 flex justify-center gap-2">
+          {VIBE_LIST.map((v) => (
+            <button
+              key={v.id}
+              onClick={() => setVibe(v.id)}
+              aria-pressed={vibe === v.id}
+              className={`rounded-xl border px-4 py-2 text-left transition-colors ${
+                vibe === v.id
+                  ? "border-accent bg-accent-soft text-text"
+                  : "border-border text-text-muted hover:border-accent/50"
+              }`}
+            >
+              <span className="block text-sm font-medium">{v.label}</span>
+              <span className="block font-mono text-[10px] text-text-dim">{v.blurb}</span>
+            </button>
+          ))}
+        </div>
+
+        <button
+          onClick={onEnter}
+          className="mt-6 inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-medium text-white transition-transform hover:scale-[1.03]"
+        >
+          <Play size={16} /> Enter in {VIBE_LIST.find((v) => v.id === vibe)?.label}
+        </button>
+        <p className="mt-3 font-mono text-[11px] text-text-dim">
+          ~1–3&nbsp;MB · loads on demand · works on phones &amp; laptops
+        </p>
+      </div>
+    </div>
   );
 }
 
@@ -305,59 +265,6 @@ function ProjectTeaser({
   );
 }
 
-/* ── under-construction banner ────────────────────────────── */
-function ConstructionBanner() {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] as const }}
-      className="mb-16 grid grid-cols-1 gap-0 overflow-hidden rounded-2xl border border-border lg:grid-cols-2"
-    >
-      {/* left — text */}
-      <div className="flex flex-col justify-center p-8 sm:p-10">
-        <div className="flex items-center gap-3">
-          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-accent/30 bg-accent-soft text-accent">
-            <Construction size={24} />
-          </span>
-          <div>
-            <h1 className="font-display text-2xl font-medium sm:text-3xl">
-              The 3D Workstation
-            </h1>
-            <p className="font-mono text-xs text-accent">under construction</p>
-          </div>
-        </div>
-        <p className="mt-5 text-text-muted">
-          An interactive 3D office where you can orbit, click project stations, read
-          live pipeline data on glowing monitors, and explore every project as a
-          spatial experience.
-        </p>
-        <div className="mt-5 flex flex-wrap gap-3">
-          {["Dual monitors", "Floating nodes", "Data flows", "City window", "Bookshelf"].map(
-            (f) => (
-              <span
-                key={f}
-                className="rounded-full border border-border px-2.5 py-1 font-mono text-[11px] text-text-dim"
-              >
-                {f}
-              </span>
-            )
-          )}
-        </div>
-        <div className="mt-6 flex items-center gap-2 font-mono text-sm text-accent">
-          <Clock size={14} />
-          <span>Deploying soon</span>
-        </div>
-      </div>
-
-      {/* right — animated preview */}
-      <div className="relative min-h-[260px] border-t border-border bg-bg-elev-2 lg:border-l lg:border-t-0">
-        <WorkstationTeaser />
-      </div>
-    </motion.div>
-  );
-}
-
 /* ── main page ────────────────────────────────────────────── */
 export function LabClient() {
   return (
@@ -370,12 +277,22 @@ export function LabClient() {
           <ArrowLeft size={16} /> Back to portfolio
         </Link>
         <span className="inline-flex items-center gap-2 font-mono text-xs text-text-dim">
-          <Boxes size={14} /> workstation / preview
+          <Boxes size={14} /> workstation
         </span>
       </header>
 
-      <main className="mx-auto max-w-4xl px-5 py-14 sm:px-8">
-        <ConstructionBanner />
+      <main className="mx-auto max-w-5xl px-5 py-10 sm:px-8">
+        <div className="mb-6">
+          <h1 className="font-display text-2xl font-medium sm:text-3xl">
+            The Workstation
+          </h1>
+          <p className="mt-2 max-w-xl text-sm text-text-muted">
+            Step into a rendered room and explore the work spatially. Drag to orbit,
+            scroll to zoom.
+          </p>
+        </div>
+
+        <WorldStage />
 
         <div className="mb-8 flex items-center gap-4">
           <span className="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-accent">

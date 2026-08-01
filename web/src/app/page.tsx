@@ -1,10 +1,8 @@
-"use client";
-
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { SectionProgress } from "@/components/ui/SectionProgress";
-import { CustomCursor } from "@/components/ui/CustomCursor";
+import { CursorLayer } from "@/components/ui/CursorLayer";
 import { BackgroundParticles } from "@/components/ui/BackgroundParticles";
 import { ParticleToggle } from "@/components/ui/ParticleToggle";
 import { ConnectionNotice } from "@/components/ui/ConnectionNotice";
@@ -17,15 +15,13 @@ import { Projects } from "@/components/sections/Projects";
 import { Skills } from "@/components/sections/Skills";
 import { Education } from "@/components/sections/Education";
 import { Contact } from "@/components/sections/Contact";
-import { useQuality } from "@/components/providers/QualityProvider";
 
 export default function Home() {
-  const { quality } = useQuality();
   return (
     <>
       <ScrollProgress />
       <SectionProgress />
-      {quality === "full" && <CustomCursor />}
+      <CursorLayer />
       <BackgroundParticles />
       <Navbar />
       <main>

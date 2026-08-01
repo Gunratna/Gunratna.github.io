@@ -3,7 +3,7 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { motion, useMotionValue, useSpring, useReducedMotion } from "framer-motion";
 import { ArrowRight, ArrowDown, FileText, Boxes } from "lucide-react";
 import { meta, profileCard } from "@/lib/content";
 import { MagneticButton } from "@/components/ui/MagneticButton";
@@ -82,6 +82,7 @@ function ProfileCard() {
 export function Hero() {
   const [resumeOpen, setResumeOpen] = useState(false);
   const { quality } = useQuality();
+  const reduceMotion = useReducedMotion();
 
   return (
     <header
@@ -160,8 +161,8 @@ export function Hero() {
         href="#about"
         aria-label="Scroll to about"
         className="absolute bottom-8 left-1/2 -translate-x-1/2 text-text-dim"
-        animate={{ y: [0, 8, 0] }}
-        transition={{ duration: 1.8, repeat: Infinity }}
+        animate={reduceMotion ? undefined : { y: [0, 8, 0] }}
+        transition={reduceMotion ? undefined : { duration: 1.8, repeat: Infinity }}
       >
         <ArrowDown size={22} />
       </motion.a>

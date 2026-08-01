@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { experience } from "@/lib/content";
 import { Section } from "@/components/ui/Section";
 import { Reveal } from "@/components/ui/Reveal";
@@ -15,14 +15,17 @@ const ROLE_CHIPS: Record<string, { label: string; href: string }[]> = {
 };
 
 function PresentNode() {
+  const reduceMotion = useReducedMotion();
   return (
     <span className="relative grid h-5 w-5 place-items-center">
       <span className="absolute inset-0 rounded-full border-2 border-accent" />
-      <motion.span
-        className="absolute inset-0 rounded-full border-2 border-accent"
-        animate={{ scale: [1, 1.9], opacity: [0.6, 0] }}
-        transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut" }}
-      />
+      {!reduceMotion && (
+        <motion.span
+          className="absolute inset-0 rounded-full border-2 border-accent"
+          animate={{ scale: [1, 1.9], opacity: [0.6, 0] }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut" }}
+        />
+      )}
       <span className="h-2 w-2 rounded-full bg-accent" />
     </span>
   );
