@@ -8,6 +8,7 @@ export const TYPE_HEX: Record<Project["type"], string> = {
   RAG: "#4cc4f7",
   Vision: "#4ade80",
   Agentic: "#b79cff",
+  VLM: "#22d3ee",
 };
 
 const KIND_HEX: Record<ArchNode["kind"], string> = {

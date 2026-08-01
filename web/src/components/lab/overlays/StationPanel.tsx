@@ -13,6 +13,7 @@ const TYPE_CLASS: Record<Project["type"], string> = {
   RAG: "text-sky-400 border-sky-400/40 bg-sky-400/10",
   Vision: "text-emerald-400 border-emerald-400/40 bg-emerald-400/10",
   Agentic: "text-purple-400 border-purple-400/40 bg-purple-400/10",
+  VLM: "text-cyan-400 border-cyan-400/40 bg-cyan-400/10",
 };
 
 const ease = [0.22, 1, 0.36, 1] as const;
